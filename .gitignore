@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+**.png
+**.svg
+**.Rproj
+/manuscript/
+data/chronodat/
