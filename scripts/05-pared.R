@@ -460,6 +460,28 @@ modt$era[modt$bottom < 250] <- "Mesozoic & Cenozoic intervals"
 
 modt$era <- factor(modt$era, levels=c("Paleozoic intervals", "Mesozoic & Cenozoic intervals"))
 
+# boom vs background
+wilcox.test(
+  modt %>% filter(boom == 1) %>% pull(modularity),
+  modt %>% filter(boom == 0) %>% pull(modularity),
+  alternative = "two.sided", , exact=FALSE
+)
+
+# booms vs background in the Mesozoic and Cenozoic
+wilcox.test(
+  modt %>% filter(boom == 1 & era != "Paleozoic intervals") %>% pull(modularity),
+  modt %>% filter(boom == 0 & era != "Paleozoic intervals") %>% pull(modularity), 
+  alternative = "two.sided", , exact=FALSE
+)
+
+# Palezoic vs Mesozoic and Cenozoic
+wilcox.test(
+  modt %>% filter(era == "Paleozoic intervals") %>% pull(modularity),
+  modt %>% filter(era != "Paleozoic intervals") %>% pull(modularity),
+  lternative = "two.sided", , exact=FALSE
+)
+
+
 # add volume
 modt <- modt %>%  left_join(n.thick %>%  select(stg=bin, vol=thick))
 

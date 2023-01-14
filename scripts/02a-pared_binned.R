@@ -40,10 +40,28 @@ pared$bin <- pared$PBDB_Bin - 1
 # Associations from pared -------------------------------------------------
 source(file.path("scripts", "02-categorise_reef_assoc.R"))
 
-dat <- pared[,c("r_number", "reef_bin", "biota_deta", "pal_lat_scotese", "pal_long_scotese")]
-colnames(dat) <- c("reefs", "bin", "ass_num", "paleolat", "paleolong")
+# check cca
+pared <- pared %>% mutate(cca = ifelse(biota_main == 2 | biota_sec == 2, 1, 0))
+
+dat <- pared[,c("r_number", "reef_bin", "biota_deta", "pal_lat_scotese", "pal_long_scotese", "cca")]
+colnames(dat) <- c("reefs", "bin", "ass_num", "paleolat", "paleolong", "cca")
 
 reefs <- merge(dat, assoc_long, by.x="ass_num", by.y="ass_num") #add group
+
+
+cca <- reefs %>% filter(group=="red algae")
+prop.table(
+  table(cca$cca)
+)
+
+cca$era <- "P" # Paleozoic
+cca$era[cca$bin > 25] <- "MC" # Mesozoic Cenozoic
+
+prop.table(
+  table(cca$cca, cca$era), 2
+)
+
+reefs$cca <- NULL # remove col
 save(reefs, file="data/reefs_group.RData")
 
 

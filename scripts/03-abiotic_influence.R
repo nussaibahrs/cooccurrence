@@ -1,4 +1,3 @@
-library(chronosphere)
 library(rgdal)
 library(rgeos)
 library(raster)
@@ -175,7 +174,7 @@ M2 = cor(vars.resid, method="spearman")
 M.p2 <- corrplot::cor.mtest(vars.resid, conf.level = 0.95, method="spearman")
 colnames(M2) <- row.names(M) <- colnames(M.p2$p) <- row.names(M.p2$p) <- labs
 
-svg("figs/supplement/fig_s05_correlation.svg", w=8, h=4)
+#svg("figs/supplement/fig_s05_correlation.svg", w=8, h=4)
 par(mfrow=c(1,2))
 
 corrplot::corrplot(M, p.mat = M.p$p, method = 'circle', type = 'lower', insig='pch', 
@@ -191,7 +190,7 @@ corrplot::corrplot(M2, p.mat = M.p2$p, method = 'circle', type = 'lower', insig=
 mtext("(b)",
       side = 3, adj = 0, line = 0, cex = 0.8)
 
-dev.off()
+#dev.off()
 
 # Linear regression ----------------------------------------------------------
 
@@ -223,12 +222,17 @@ summary(final1)$r.squared
 
 str(summary(final1))
 
-modsumm <- broom::tidy(final1) %>% 
-  add_row(term="R2", estimate=summary(final1)$adj.r.squared, p.value=anova(final1)$`Pr(>F)`[1]) %>% 
-    bind_rows(
-      broom::tidy(final) %>% 
-        add_row(term="R2", estimate=summary(final)$adj.r.squared, p.value=anova(final)$`Pr(>F)`[1])
-    )
+final2 <- lm(thick~temperature +Sr, data=vars.resid)
+summary(final2)
+
+modsumm <- broom::tidy(final2) %>% 
+  add_row(term="R2", estimate=summary(final1)$adj.r.squared, p.value=anova(final1)$`Pr(>F)`[1]) 
+
+# %>% 
+#     bind_rows(
+#       broom::tidy(final) %>% 
+#         add_row(term="R2", estimate=summary(final)$adj.r.squared, p.value=anova(final)$`Pr(>F)`[1])
+#     )
 
 
 # save results
