@@ -2,6 +2,7 @@ library(cooccur)
 library(ggplot2)
 library(dplyr)
 library(patchwork)
+library(divDyn)
 
 source("scripts/functions.R")
 pal <- ggsci::pal_uchicago("default")(9)[c(2,5,4,3,1)]
@@ -164,10 +165,16 @@ for(re in resolutions){
   
 }
 
-ggsave("figs/fig_02_reef_nonreef.svg", comp[[1]], w=4, h=4)
+# ggsave("figs/fig_02_reef_nonreef.svg", comp[[1]], w=4, h=4)
 
-svg("figs/supplement/figs_s_spatial_assoc.svg", w=12, h=8)
-wrap_plots(comp[-1], 2,3) +
-  plot_annotation(tag_levels="a", tag_prefix = "(", tag_suffix = ")") &
-  theme(plot.tag=element_text(size=10))
+svg("figs/supplement/fig_02_reef_nonreef.svg", w=12, h=8)
+
 dev.off()
+
+p <- wrap_plots(comp, 2,3) +
+  plot_annotation(tag_levels="a", tag_prefix = "(", tag_suffix = ")") +
+  plot_layout(guides = "collect") &
+  theme(plot.tag=element_text(size=10),
+        legend.position = "bottom")
+
+ggsave("figs/fig_02_reef_nonreef.svg", p, w=12, h=8)

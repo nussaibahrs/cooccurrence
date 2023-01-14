@@ -27,7 +27,7 @@ pal <- ggsci::pal_uchicago("default")(9)[c(2,5,4,3,1)]
 res <- list()
 
 # across time
-for(i in 4:94){
+for(i in 2:50){
 	temp <- subset(reefs, bin==i)
 	
 	# create site x sp matrix
@@ -435,9 +435,9 @@ modt <- merge(modt, int_summary, by.x="stg", by.y="ten")
 
 p5 <- ggplot(modt, aes(x=mid, y=modularity)) +
 	geom_vline(xintercept=252, col="grey80", linetype="dashed") +
-	geom_line(col="grey60", size=1) +
+	geom_line(col="grey60", size=1, linetype="dashed") +
 	geom_point(aes(col=as.factor(boom), shape=as.factor(boom)),
-			   size=3, stroke=1, fill="white") +
+			   size=2.5, stroke=1, fill="white") +
 	scale_x_continuous(trans="reverse") +
 	ggthemes::theme_hc() +
 	scale_color_manual(values=pal[c(3,4)], labels=c("0"="no","1"="yes")) +
@@ -445,9 +445,32 @@ p5 <- ggplot(modt, aes(x=mid, y=modularity)) +
 	labs(x="Age (Ma)", y="Modularity", shape="Reef boom", 
 		 color="Reef boom") +
 	theme(axis.title=element_text(face="bold"),
-		  legend.title=element_text(face="bold"))
+		  legend.title=element_text(face="bold"),
+		  legend.position = "none")
 
 p5 <- cowplot::ggdraw(deeptime::gggeo_scale(p5, size=3, height = unit(1, "lines")))
 p5
 
-ggsave("figs/supplement/fig05_modularity_time.svg", w=7, h=5)
+ggsave("figs/fig04_modularity_time_1.svg", p5, w=6, h=4)
+
+# reproduce evenness vs time
+
+modt$era <- "Paleozoic intervals"
+modt$era[modt$bottom < 250] <- "Mesozoic & Cenozoic intervals"
+
+modt$era <- factor(modt$era, levels=c("Paleozoic intervals", "Mesozoic & Cenozoic intervals"))
+
+# add volume
+modt <- modt %>%  left_join(n.thick %>%  select(stg=bin, vol=thick))
+
+p6 <- ggplot(modt, aes(x=vol, y=modularity, col=era)) +
+  geom_point(aes(shape=as.factor(boom)), size=2.5) +
+  scale_shape_manual(values=c(21, 16), labels=c("0"="no","1"="yes")) +
+  scale_color_manual(values=pal[c(2,5)]) +
+  scale_x_log10(labels = label_log()) +
+  labs(x="Reef volume (m3, logged-scale)", y="Modularity", shape="Reef boom", 
+       color="Era") +
+  theme(axis.title=element_text(face="bold"),
+        legend.title=element_text(face="bold"))
+
+ggsave("figs/fig04_modularity_time_2.svg", p6, w=6, h=4)  
